@@ -8,12 +8,15 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { CreateUserEntity } from './entities/user.entity';
+import { UpdatePutUserEntity } from './entities/update-put-user.entity';
+import { UpdatePatchUserEntity } from './entities/update-patch-user.entity';
 
 @Controller('users')
 export class UserController {
   @Post()
-  async create(@Body() body) {
-    return body;
+  async create(@Body() createEntity: CreateUserEntity) {
+    return createEntity;
   }
 
   @Get()
@@ -27,19 +30,25 @@ export class UserController {
   }
 
   @Put(':id')
-  async update(@Body() body, @Param() params) {
+  async update(
+    @Body() updatePutUserEntity: UpdatePutUserEntity,
+    @Param() params,
+  ) {
     return {
       method: 'PUT',
-      body,
+      updatePutUserEntity,
       params,
     };
   }
 
   @Patch(':id')
-  async partialUpdate(@Body() body, @Param() params) {
+  async partialUpdate(
+    @Body() updatePatchUserEntity: UpdatePatchUserEntity,
+    @Param() params,
+  ) {
     return {
       method: 'PATCH',
-      body,
+      updatePatchUserEntity,
       params,
     };
   }
