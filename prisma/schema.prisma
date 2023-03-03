@@ -1,11 +1,21 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int      @id @default(autoincrement()) @db.UnsignedInt
+  name     String   @db.VarChar(63)
+  email    String   @db.VarChar(127)
+  password String   @db.VarChar(127)
+  createAt DateTime @default(now()) @db.Timestamp(0)
+  updateAt DateTime @default(now()) @db.Timestamp(0)
+
+  // O nome do model era igual o da table,como eu mudei para User, 
+  // @@map("üsers") server para mapear a table desse model
+  @@map("users")
 }
