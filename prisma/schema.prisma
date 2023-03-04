@@ -8,12 +8,13 @@ datasource db {
 }
 
 model User {
-  id       Int      @id @default(autoincrement()) @db.UnsignedInt
-  name     String   @db.VarChar(63)
-  email    String   @db.VarChar(127)
-  password String   @db.VarChar(127)
-  createAt DateTime @default(now()) @db.Timestamp(0)
-  updateAt DateTime @default(now()) @db.Timestamp(0)
+  id       Int       @id @default(autoincrement()) @db.UnsignedInt
+  name     String    @db.VarChar(63)
+  email    String    @db.VarChar(127)
+  password String    @db.VarChar(127)
+  birthAt  DateTime? @db.Date
+  createAt DateTime  @default(now()) @db.Timestamp(0)
+  updateAt DateTime  @default(now()) @db.Timestamp(0)
 
   // O nome do model era igual o da table,como eu mudei para User, 
   // @@map("üsers") server para mapear a table desse model

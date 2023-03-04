@@ -38,11 +38,7 @@ export class UserController {
     @Body() updatePutUserEntity: UpdatePutUserEntity,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    return {
-      method: 'PUT',
-      updatePutUserEntity,
-      id,
-    };
+    return this.userService.update(id, updatePutUserEntity);
   }
 
   @Patch(':id')
@@ -50,11 +46,7 @@ export class UserController {
     @Body() updatePatchUserEntity: UpdatePatchUserEntity,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    return {
-      method: 'PATCH',
-      updatePatchUserEntity,
-      id,
-    };
+    return this.userService.partialUpdate(id, updatePatchUserEntity);
   }
 
   @Delete(':id')

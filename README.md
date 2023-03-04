@@ -7,3 +7,9 @@
 ```bash
 npx prisma db push
 ```
+
+- Create migrations
+
+```bash
+npx prisma migrate dev --nave migrationsName
+```

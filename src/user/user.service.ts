@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserEntity } from './entities/user.entity';
+import { UpdatePutUserEntity } from './entities/update-put-user.entity';
+import { UpdatePatchUserEntity } from './entities/update-patch-user.entity';
 
 @Injectable()
 export class UserService {
@@ -24,6 +26,55 @@ export class UserService {
 
   async readOne(id: number) {
     return this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async update(
+    id: number,
+    { email, name, password, birthAt }: UpdatePutUserEntity,
+  ) {
+    // if (!data.birthAt ? new Date(data.birthAt) : null) {
+    //   data.birthAt = null;
+    // }
+    return this.prisma.user.update({
+      data: {
+        email,
+        name,
+        password,
+        birthAt: birthAt ? new Date(birthAt) : null,
+      },
+      where: {
+        id,
+      },
+    });
+  }
+
+  async partialUpdate(
+    id: number,
+    { email, name, password, birthAt }: UpdatePatchUserEntity,
+  ) {
+    const data: any = {};
+    if (birthAt) {
+      data.birthAt = new Date(birthAt);
+    }
+
+    if (email) {
+      data.email = email;
+    }
+
+    if (name) {
+      data.name = name;
+    }
+
+    if (password) {
+      data.password = password;
+    }
+
+    return this.prisma.user.update({
+      data,
       where: {
         id,
       },
