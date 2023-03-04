@@ -12,22 +12,25 @@ import {
 import { CreateUserEntity } from './entities/user.entity';
 import { UpdatePutUserEntity } from './entities/update-put-user.entity';
 import { UpdatePatchUserEntity } from './entities/update-patch-user.entity';
+import { UserService } from './user.service';
 
 @Controller('users')
 export class UserController {
+  constructor(private readonly userService: UserService) {}
+
   @Post()
-  async create(@Body() createEntity: CreateUserEntity) {
-    return createEntity;
+  async create(@Body() request: CreateUserEntity) {
+    return this.userService.create(request);
   }
 
   @Get()
-  async read() {
-    return { users: [] };
+  async readAll() {
+    return this.userService.readAll();
   }
 
   @Get(':id')
-  async readOne(@Param() @Param('id', ParseIntPipe) id: number) {
-    return { users: {}, id };
+  async readOne(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.readOne(id);
   }
 
   @Put(':id')
@@ -35,11 +38,7 @@ export class UserController {
     @Body() updatePutUserEntity: UpdatePutUserEntity,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    return {
-      method: 'PUT',
-      updatePutUserEntity,
-      id,
-    };
+    return this.userService.update(id, updatePutUserEntity);
   }
 
   @Patch(':id')
@@ -47,17 +46,11 @@ export class UserController {
     @Body() updatePatchUserEntity: UpdatePatchUserEntity,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    return {
-      method: 'PATCH',
-      updatePatchUserEntity,
-      id,
-    };
+    return this.userService.partialUpdate(id, updatePatchUserEntity);
   }
 
   @Delete(':id')
   async delete(@Param('id', ParseIntPipe) id: number) {
-    return {
-      id,
-    };
+    return this.userService.delete(id);
   }
 }
