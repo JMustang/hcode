@@ -12,12 +12,15 @@ import {
 import { CreateUserEntity } from './entities/user.entity';
 import { UpdatePutUserEntity } from './entities/update-put-user.entity';
 import { UpdatePatchUserEntity } from './entities/update-patch-user.entity';
+import { UserService } from './user.service';
 
 @Controller('users')
 export class UserController {
+  constructor(private readonly userService: UserService) {}
+
   @Post()
-  async create(@Body() createEntity: CreateUserEntity) {
-    return createEntity;
+  async create(@Body() request: CreateUserEntity) {
+    return this.userService.create(request);
   }
 
   @Get()

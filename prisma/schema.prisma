@@ -17,5 +17,6 @@ model User {
 
   // O nome do model era igual o da table,como eu mudei para User, 
   // @@map("üsers") server para mapear a table desse model
+
   @@map("users")
 }
