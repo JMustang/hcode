@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserEntity } from './entities/user.entity';
 import { UpdatePutUserEntity } from './entities/update-put-user.entity';
@@ -36,9 +36,8 @@ export class UserService {
     id: number,
     { email, name, password, birthAt }: UpdatePutUserEntity,
   ) {
-    // if (!data.birthAt ? new Date(data.birthAt) : null) {
-    //   data.birthAt = null;
-    // }
+    await this.exist(id);
+
     return this.prisma.user.update({
       data: {
         email,
@@ -56,6 +55,8 @@ export class UserService {
     id: number,
     { email, name, password, birthAt }: UpdatePatchUserEntity,
   ) {
+    await this.exist(id);
+
     const data: any = {};
     if (birthAt) {
       data.birthAt = new Date(birthAt);
@@ -79,5 +80,21 @@ export class UserService {
         id,
       },
     });
+  }
+
+  async delete(id: number) {
+    await this.exist(id);
+
+    return this.prisma.user.delete({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async exist(id: number) {
+    if (!(await this.readOne(id))) {
+      throw new NotFoundException(`User ${id}, does not exist!`);
+    }
   }
 }
