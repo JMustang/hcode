@@ -9,11 +9,12 @@ export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   // Method POST
-  async create({ email, name, password }: CreateUserEntity) {
+  async create({ email, name, password, birthAt }: CreateUserEntity) {
     return this.prisma.user.create({
       data: {
         email,
         name,
+        birthAt: birthAt ? new Date(birthAt) : null,
         password,
       },
     });
