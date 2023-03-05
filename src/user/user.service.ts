@@ -9,11 +9,12 @@ export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   // Method POST
-  async create({ email, name, password }: CreateUserEntity) {
+  async create({ email, name, password, birthAt }: CreateUserEntity) {
     return this.prisma.user.create({
       data: {
         email,
         name,
+        birthAt: birthAt ? new Date(birthAt) : null,
         password,
       },
     });
@@ -25,6 +26,7 @@ export class UserService {
   }
 
   async readOne(id: number) {
+    await this.exist(id);
     return this.prisma.user.findUnique({
       where: {
         id,
@@ -93,7 +95,13 @@ export class UserService {
   }
 
   async exist(id: number) {
-    if (!(await this.readOne(id))) {
+    if (
+      !(await this.prisma.user.count({
+        where: {
+          id,
+        },
+      }))
+    ) {
       throw new NotFoundException(`User ${id}, does not exist!`);
     }
   }
