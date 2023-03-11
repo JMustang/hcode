@@ -1,5 +1,9 @@
 import { PrismaService } from './../prisma/prisma.service';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadGatewayException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
@@ -7,6 +11,8 @@ import { AuthRegisterEntity } from './entities/auth-register.entity';
 
 @Injectable()
 export class AuthService {
+  private ussuer = 'login';
+  private audience = 'users';
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
@@ -32,7 +38,24 @@ export class AuthService {
   }
 
   async checkToken(token: string) {
-    // return this.jwtService.verify(token);
+    try {
+      const data = this.jwtService.verify(token, {
+        audience: 'users',
+        issuer: 'login',
+      });
+      return data;
+    } catch (e) {
+      throw new BadGatewayException(e);
+    }
+  }
+
+  async isValidToken(token: string) {
+    try {
+      this.checkToken(token);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   async login(email: string, password: string) {
