@@ -11,7 +11,7 @@ import { AuthRegisterEntity } from './entities/auth-register.entity';
 
 @Injectable()
 export class AuthService {
-  private ussuer = 'login';
+  private issuer = 'login';
   private audience = 'users';
   constructor(
     private readonly jwtService: JwtService,
@@ -19,7 +19,7 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
-  async crateToken(user: User) {
+  crateToken(user: User) {
     return {
       accessToken: this.jwtService.sign(
         {
@@ -30,18 +30,18 @@ export class AuthService {
         {
           expiresIn: '7 days',
           subject: String(user.id),
-          issuer: 'login',
-          audience: 'users',
+          issuer: this.issuer,
+          audience: this.audience,
         },
       ),
     };
   }
 
-  async checkToken(token: string) {
+  checkToken(token: string) {
     try {
       const data = this.jwtService.verify(token, {
-        audience: 'users',
-        issuer: 'login',
+        audience: this.audience,
+        issuer: this.issuer,
       });
       return data;
     } catch (e) {
@@ -49,7 +49,7 @@ export class AuthService {
     }
   }
 
-  async isValidToken(token: string) {
+  isValidToken(token: string) {
     try {
       this.checkToken(token);
       return true;
