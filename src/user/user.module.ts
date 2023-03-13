@@ -6,12 +6,13 @@ import {
   Module,
   NestModule,
   RequestMethod,
+  forwardRef,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule],
+  imports: [PrismaModule, forwardRef(() => AuthModule)],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],
