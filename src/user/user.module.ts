@@ -8,9 +8,10 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { UserService } from './user.service';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, AuthModule],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],
