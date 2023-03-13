@@ -32,7 +32,7 @@ export class UserController {
     return this.userService.create(request);
   }
 
-  @Roles(Role.Admin)
+  @Roles(Role.Admin, Role.User)
   @Get()
   async readAll() {
     return this.userService.readAll();
