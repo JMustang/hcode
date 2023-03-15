@@ -19,6 +19,7 @@ import { ParamId } from 'src/decorators/param-id.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/enums/role.enum';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @UseGuards(AuthGuard, RoleGuard)
 @UseInterceptors(LogInterceptor)
@@ -26,6 +27,7 @@ import { AuthGuard } from 'src/guards/auth.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @UseGuards(ThrottlerGuard)
   @Roles(Role.Admin)
   @Post()
   async create(@Body() request: CreateUserEntity) {
