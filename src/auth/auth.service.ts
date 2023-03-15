@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
 import { AuthRegisterEntity } from './entities/auth-register.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -62,7 +63,6 @@ export class AuthService {
     const user = await this.prisma.user.findFirst({
       where: {
         email,
-        password,
       },
     });
 
@@ -71,6 +71,12 @@ export class AuthService {
         message: `Email or password is incorrect.`,
       });
     }
+    if (!bcrypt.compare(password, user.password)) {
+      throw new UnauthorizedException({
+        message: `Email or password is incorrect.`,
+      });
+    }
+
     return this.crateToken(user);
   }
   async forget(email: string) {
