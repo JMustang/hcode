@@ -4,8 +4,12 @@ import {
   BadRequestException,
   Body,
   Controller,
+  FileTypeValidator,
+  MaxFileSizeValidator,
+  ParseFilePipe,
   Post,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -16,7 +20,7 @@ import { AuthResetEntity } from './entities/auth-reset.entity';
 import { AuthService } from './auth.service';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { User } from 'src/decorators/user.decorator.';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 
 @Controller('auth')
@@ -71,5 +75,23 @@ export class AuthController {
       throw new BadRequestException(e);
     }
     return { success: true };
+  }
+
+  @UseInterceptors(FilesInterceptor('files'))
+  @UseGuards(AuthGuard)
+  @Post('files')
+  async uploadFiles(
+    @User() user,
+    @UploadedFiles(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: 'images/png' }),
+          new MaxFileSizeValidator({ maxSize: 1024 * 50 }),
+        ],
+      }),
+    )
+    files: Express.Multer.File[],
+  ) {
+    return files;
   }
 }
