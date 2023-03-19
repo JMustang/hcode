@@ -3,20 +3,19 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserEntity } from './entities/user.entity';
 import { UpdatePutUserEntity } from './entities/update-put-user.entity';
 import { UpdatePatchUserEntity } from './entities/update-patch-user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   // Method POST
-  async create({ email, name, password, birthAt }: CreateUserEntity) {
+  async create(data: CreateUserEntity) {
+    const salt = await bcrypt.genSalt();
+    data.password = await bcrypt.hash(data.password, salt);
+
     return this.prisma.user.create({
-      data: {
-        email,
-        name,
-        birthAt: birthAt ? new Date(birthAt) : null,
-        password,
-      },
+      data,
     });
   }
 
@@ -36,9 +35,12 @@ export class UserService {
 
   async update(
     id: number,
-    { email, name, password, birthAt }: UpdatePutUserEntity,
+    { email, name, password, birthAt, role }: UpdatePutUserEntity,
   ) {
     await this.exist(id);
+
+    const salt = await bcrypt.genSalt();
+    password = await bcrypt.hash(password, salt);
 
     return this.prisma.user.update({
       data: {
@@ -46,6 +48,7 @@ export class UserService {
         name,
         password,
         birthAt: birthAt ? new Date(birthAt) : null,
+        role,
       },
       where: {
         id,
@@ -55,7 +58,7 @@ export class UserService {
 
   async partialUpdate(
     id: number,
-    { email, name, password, birthAt }: UpdatePatchUserEntity,
+    { email, name, password, birthAt, role }: UpdatePatchUserEntity,
   ) {
     await this.exist(id);
 
@@ -73,7 +76,12 @@ export class UserService {
     }
 
     if (password) {
-      data.password = password;
+      const salt = await bcrypt.genSalt();
+      data.password = await bcrypt.hash(password, salt);
+    }
+
+    if (role) {
+      data.role = role;
     }
 
     return this.prisma.user.update({
