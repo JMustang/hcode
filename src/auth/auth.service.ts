@@ -9,6 +9,7 @@ import { User } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
 import { AuthRegisterEntity } from './entities/auth-register.entity';
 import * as bcrypt from 'bcrypt';
+import { MailerService } from '@nestjs-modules/mailer/dist';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
+    private readonly mailer: MailerService,
   ) {}
 
   crateToken(user: User) {
@@ -91,6 +93,15 @@ export class AuthService {
         message: `Incorrect email.`,
       });
     }
+    await this.mailer.sendMail({
+      subject: 'email recovery',
+      to: email,
+      template: 'forgot',
+      context: {
+        name: user.name,
+        link: '',
+      },
+    });
     return true;
   }
   async reset(password: string, token: string) {
